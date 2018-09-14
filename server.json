@@ -1,0 +1,22 @@
+{
+    "name": "WeatherDisplay",
+    "docs": "http;//www.bobsplace.com/release/WFNodeserver",
+    "type": "python3",
+    "executable": "wdpoly.py",
+    "install": "install.sh",
+    "description": "Add weather data from Weather Display to the SY994",
+    "notice": "see http://www.weather-display.com for more information",
+    "shortPoll": "5",
+    "longPoll": "60",
+    "profile_version": "0.1.0",
+    "credits": [
+    	{
+    		"title": "WDPoly: Weather Data",
+    		"author": "Bob Paauwe",
+    		"version": "0.1.0",
+    		"date": "September 14, 2018",
+    		"source": "https://github.com/bpaauwe/wdpoly",
+            "license": "https://github.com/bpaauwe/wdpoly/LICENSE"
+		}
+	]
+}
