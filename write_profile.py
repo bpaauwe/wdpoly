@@ -4,6 +4,7 @@ import collections
 import re
 import os
 import zipfile
+import json
 
 pfx = "write_profile:"
 
@@ -213,7 +214,7 @@ def get_server_data(logger):
         with open('server.json') as data:
             serverdata = json.load(data)
     except Exception as err:
-        logger.error('harmony_hub_funcs:get_server_data: failed to read hubs file {0}: {1}'.format('server.json',err), exc_info=True)
+        logger.error('get_server_data: failed to read {0}: {1}'.format('server.json',err), exc_info=True)
         return False
     data.close()
     # Get the version info
