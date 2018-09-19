@@ -13,6 +13,7 @@ import socket
 import math
 import threading
 import struct
+import write_profile
 
 LOGGER = polyinterface.LOGGER
 
@@ -24,6 +25,23 @@ class Controller(polyinterface.Controller):
         self.primary = self.address
         self.udp_port = 1333
         self.mcast_ip = "231.31.31.31"
+        self.units = ""
+        self.temperature_list = {}
+        self.humidity_list = {}
+        self.pressure_list = {}
+        self.wind_list = {}
+        self.rain_list = {}
+        self.light_list = {}
+        self.lightning_list = {}
+        self.temperature_map = []
+        self.mapping = {}
+
+        try:
+            self.polyConfig
+            LOGGER.info("polyConfig DOES exist what's going on?")
+        except NameError:
+            LOGGER.info("polyConfig doesn't exist yet")
+            self.polyConfig = None
 
         #self.poly.onConfig(self.process_config)
 
@@ -36,7 +54,7 @@ class Controller(polyinterface.Controller):
 
     def start(self):
         LOGGER.info('Starting WeatherDisplay Node Server')
-        #self.check_params()
+        self.check_params()
         LOGGER.info('Calling discover')
         self.discover()
 
@@ -90,21 +108,75 @@ class Controller(polyinterface.Controller):
         default_elevation = 0
 
         LOGGER.info("Check for existing configuration value")
-        if 0:
-            if 'UDPPort' in self.polyConfig['customParams']:
-                self.udp_port = int(self.polyConfig['customParams']['UDPPort'])
-            else:
-                self.udp_port = default_port
 
-            if 'IPAddress' in self.polyConfig['customParams']:
-                self.mcast_ip = self.polyConfig['customParams']['IPAddress']
-            else:
-                self.mcast_ip = default_ip
+        if 'UDPPort' in self.polyConfig['customParams']:
+            self.udp_port = int(self.polyConfig['customParams']['UDPPort'])
+        else:
+            self.udp_port = default_port
+
+        if 'IPAddress' in self.polyConfig['customParams']:
+            self.mcast_ip = self.polyConfig['customParams']['IPAddress']
+        else:
+            self.mcast_ip = default_mcast_ip
+
+        if 'Units' in self.polyConfig['customParams']:
+            self.units = self.polyConfig['customParams']['Units']
+        else:
+            self.units = 'metric'
+
+        # Build up our data mapping table. The customParams keys will
+        # look like temperature.main and the value will be WD field #
+        LOGGER.info("Trying to create a mapping")
+        for key in self.polyConfig['customParams']:
+            LOGGER.info('key = ' + key)
+            if not '-' in key:
+                LOGGER.info("skipping " + key)
+                continue
+
+            vmap = key.split('-')
+
+            # Mapping needs to be a list for each node and each list item
+            # is a 2 element list (or a dictionary?)
+
+            LOGGER.info("%s: %s %s" % (key, vmap[0], vmap[1]))
+            if vmap[0] == 'temperature':
+                LOGGER.info('append to temperature_map')
+                LOGGER.info('0 = %s, 1 = %s' % (write_profile.TEMP_DRVS[vmap[1]], self.polyConfig['customParams'][key]))
+                mapper = [ write_profile.TEMP_DRVS[vmap[1]], self.polyConfig['customParams'][key] ]
+                self.temperature_map.append(mapper)
+                LOGGER.info('add to temperature_list')
+                self.temperature_list[vmap[1]] = 'TEMP_F'
+            elif vmap[0] == 'humidity':
+                self.humidity_list[vmap[1]] = 'I_HUMIDITY'
+            elif vmap[0] == 'pressure':
+                self.pressure_list[vmap[1]] = 'I_MB'
+            elif vmap[0] == 'wind':
+                self.wind_list[vmap[1]] = 'I_MPH'
+            elif vmap[0] == 'rain':
+                self.rain_list[vmap[1]] = 'I_MM'
+            elif vmap[0] == 'light':
+                self.light_list[vmap[1]] = 'I_UV'
+            elif vmap[0] == 'lightning':
+                self.lightning_list[vmap[1]] = 'I_STRIKES'
 
         # Make sure they are in the params
         LOGGER.info("Adding configuation")
-        self.addCustomParam({'UDPPort': self.udp_port,
-                    'IPAddress': self.mcast_ip})
+        self.addCustomParam({
+                    'UDPPort': self.udp_port,
+                    'IPAddress': self.mcast_ip,
+                    'Units': self.units,
+                    'temperature-main': 4,
+                    'temperature-heatindex': 45,
+                    'temperature-windchill': 44,
+                    'humidity-main': 5,
+                    'pressure-sealevel': 6,
+                    'pressure-trend': 50})
+
+        # Build the node definition
+        LOGGER.info('Try to create node definition profile based on config.')
+        write_profile.write_profile(LOGGER, self.temperature_list,
+                self.humidity_list, self.pressure_list, self.wind_list,
+                self.rain_list, self.light_list, self.lightning_list)
 
         # Remove all existing notices
         LOGGER.info("remove all notices")
@@ -224,7 +296,7 @@ class TemperatureNode(polyinterface.Node):
         elif (u == 'us'):   # F
             self.drivers[0]['uom'] = 17
             self.drivers[1]['uom'] = 17
-            self.drivers[2]['uom'] = 17
+            selft.drivers[2]['uom'] = 17
             self.drivers[3]['uom'] = 17
             self.drivers[4]['uom'] = 17
             self.id = 'temperatureUS'
