@@ -30,6 +30,70 @@ The settings for this node are:
    * Configure the port Weather Display sends data on (TBD).
 #### IPAddress
    * Configure the multicast IP address used by Weather Display (TBD).
+#### Units
+   * Configure the units used when displaying data. Choices are:
+   *   metric - SI / metric units
+   *   us     - units generally used in the U.S.
+   *   uk     - units generally used in the U.K.
+#### Data Configuration
+   * Configure which data fields to pass to the ISY. The key is node-fieldname
+     and the value is the Weather Display field number.  The following is 
+     the complete list:
+
+        temperature-main : 4
+        temperature-dewpoint : n/a (calculated)
+        temperature-windchill : 44
+        temperature-heatindex : 45
+        temperature-apparent : n/a (calculated)
+        temperature-inside : 12
+        temperature-extra1 : 16
+        temperature-extra2 : 20
+        temperature-extra3 : 21
+        temperature-extra4 : 22
+        temperature-extra5 : 23
+        temperature-extra6 : 24
+        temperature-extra7 : 25
+        temperature-extra8 : n/a
+        temperature-extra9 : n/a
+        temperature-extra10 : n/a
+        temperature-max : 46
+        temperature-min : 47
+        temperature-soil : 14 
+
+        humidiy-main : 5
+        humidiy-inside : 13
+        humidiy-extra1 : 17
+        humidiy-extra2 : 26
+        humidiy-extra3 : 27
+        humidiy-extra4 : 28
+        humidiy-extra5 : n/a
+
+        pressure-station : n/a
+        pressure-sealevel : 6
+        pressure-trend : n/a (calculated)
+
+        wind-windspeed : 2
+        wind-winddir : 3
+        wind-gustspeed : n/a
+        wind-gustdir : n/a
+        wind-lullspeed : n/a
+        wind-avgwindspeed : 1
+
+        rain-rate : 10
+        rain-hourly : n/a
+        rain-daily : 7
+        rain-weekly : n/a
+        rain-monthly : 8
+        rain-yearly : 9
+        rain-maxrate : 11
+        rain-yesterday : 19
+
+        light-uv : 34
+        light-solar_radiation : n/a
+        light-illuminace : n/a
+
+        lightning-strikes : 33
+        lightning-distance : n/a
 
 
 ## Requirements
