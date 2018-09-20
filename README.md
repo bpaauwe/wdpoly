@@ -40,6 +40,7 @@ The settings for this node are:
      and the value is the Weather Display field number.  The following is 
      the complete list:
 
+```
         temperature-main : 4
         temperature-dewpoint : n/a (calculated)
         temperature-windchill : 44
@@ -94,6 +95,7 @@ The settings for this node are:
 
         lightning-strikes : 33
         lightning-distance : n/a
+```
 
 
 ## Requirements
