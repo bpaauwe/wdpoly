@@ -385,7 +385,7 @@ class Controller(polyinterface.Controller):
         self.units = u
 
 
-    id = 'WDPoly'
+    id = 'WeatherDisplay'
     name = 'WeatherDisplayPoly'
     address = 'weather'
     stopping = False
