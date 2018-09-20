@@ -23,16 +23,16 @@ VERSION_FILE = "profile/version.txt"
 #   temperature.heatindex = <>
 #   temperature.apparent = <>
 #   temperature.inside = <>
-#   temperature.aux1 = <>
-#   temperature.aux2 = <>
-#   temperature.aux3 = <>
-#   temperature.aux4 = <>
-#   temperature.aux5 = <>
-#   temperature.aux6 = <>
-#   temperature.aux7 = <>
-#   temperature.aux8 = <>
-#   temperature.aux9 = <>
-#   temperature.aux10 = <>
+#   temperature.extra1 = <>
+#   temperature.extra2 = <>
+#   temperature.extra3 = <>
+#   temperature.extra4 = <>
+#   temperature.extra5 = <>
+#   temperature.extra6 = <>
+#   temperature.extra7 = <>
+#   temperature.extra8 = <>
+#   temperature.extra9 = <>
+#   temperature.extra10 = <>
 
 TEMP_DRVS = {
         'main' : 'ST',
@@ -41,20 +41,29 @@ TEMP_DRVS = {
         'heatindex' : 'GV2',
         'apparent' : 'GV3',
         'inside' : 'GV4',
-        'aux1' : 'GV5',
-        'aux2' : 'GV6',
-        'aux3' : 'GV7',
-        'aux4' : 'GV8',
-        'aux5' : 'GV9',
-        'aux6' : 'GV10',
-        'aux7' : 'GV11',
-        'aux8' : 'GV12',
-        'aux9' : 'GV13',
-        'aux10' : 'GV14' }
+        'extra1' : 'GV5',
+        'extra2' : 'GV6',
+        'extra3' : 'GV7',
+        'extra4' : 'GV8',
+        'extra5' : 'GV9',
+        'extra6' : 'GV10',
+        'extra7' : 'GV11',
+        'extra8' : 'GV12',
+        'extra9' : 'GV13',
+        'extra10' : 'GV14',
+        'max' : 'GV15',
+        'min' : 'GV16',
+        'soil' : 'GV17',
+        }
 
 HUMD_DRVS = {
         'main' : 'ST',
-        'aux1' : 'GV0'
+        'inside' : 'GV0',
+        'extra1' : 'GV1',
+        'extra2' : 'GV2',
+        'extra3' : 'GV3',
+        'extra4' : 'GV4',
+        'extra5' : 'GV5',
         }
 
 PRES_DRVS = {
@@ -68,7 +77,8 @@ WIND_DRVS = {
         'winddir' : 'GV0',
         'gustspeed' : 'GV1',
         'gustdir' : 'GV2',
-        'lullspeed' : 'GV3'
+        'lullspeed' : 'GV3',
+        'avgwindspeed' : 'GV4',
         }
 
 RAIN_DRVS = {
@@ -77,7 +87,9 @@ RAIN_DRVS = {
         'daily' : 'GV1',
         'weekly' : 'GV2',
         'monthly' : 'GV3',
-        'yearly' : 'GV4'
+        'yearly' : 'GV4',
+        'maxrate' : 'GV5',
+        'yesterday' : 'GV6',
         }
 
 LITE_DRVS = {
@@ -113,12 +125,29 @@ def write_profile(logger, temperature_list, humidity_list, pressure_list,
         logger.error("Unable to complete without server data...")
         return False
 
-    logger.info("{0} Writing profile/nodedef/custom.xml".format(pfx))
-    nodedef = open("profile/nodedef/custom.xml", "w")
+    logger.info("{0} Writing profile/nodedef/nodedefs.xml".format(pfx))
+    nodedef = open("profile/nodedef/nodedefs.xml", "w")
     nodedef.write("<nodeDefs>\n")
 
+    # First, write the controller node definition
+    nodedef.write(NODEDEF_TMPL % ('WeatherDisplay', 'ctl'))
+    nodedef.write("    <sts>\n")
+    nodedef.write("      <st id=\"ST\" editor=\"bool\" />\n")
+    nodedef.write("      <st id=\"GV0\" editor=\"I_VOLTS\" />\n")
+    nodedef.write("      <st id=\"GV1\" editor=\"I_VOLTS\" />\n")
+    nodedef.write("    </sts>\n")
+    nodedef.write("    <cmds>\n")
+    nodedef.write("      <sends />\n")
+    nodedef.write("      <accepts>\n")
+    nodedef.write("        <cmd id=\"DISCOVER\" />\n")
+    nodedef.write("        <cmd id=\"REMOVE_NOTICES_ALL\" />\n")
+    nodedef.write("        <cmd id=\"UPDATE_PROFILE\" />\n")
+    nodedef.write("      </accepts>\n")
+    nodedef.write("    </cmds>\n")
+    nodedef.write("  </nodeDef>\n\n")
+
     # Need to translate temperature.main into <st id="ST" editor="TEMP_C" />
-    # and     translate temperature.aux1 into <st id="GV5" editor="TEMP_C" />
+    # and     translate temperature.extra1 into <st id="GV5" editor="TEMP_C" />
 
     if (len(temperature_list) > 0):
         nodedef.write(NODEDEF_TMPL % ('temperature', '139T'))
@@ -255,7 +284,7 @@ if __name__ == "__main__":
 
     # Test dictionaries to generate a custom nodedef file.
     tl = {'main' : 'TEMP_F', 'dewpoint' : 'TEMP_F', 'apparent' : 'TEMP_F',
-            'aux3' : 'TEMP_F'}
+            'extra3' : 'TEMP_F'}
     hl = {'main' : 'I_HUMIDITY'}
     pl = {'station' : 'I_INHG', 'trend' : 'I_TREND'}
     wl = {'windspeed' : 'I_MPH', 'gustspeed' : 'I_MPH', 'winddir' : 'I_DEGREE'}
