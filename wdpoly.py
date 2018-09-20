@@ -103,8 +103,6 @@ class Controller(polyinterface.Controller):
                     'Temperatures')
             LOGGER.info("Set units maybe?")
             node.SetUnits(self.units)
-            LOGGER.info("Clear drivers from node")
-            node.drivers = []
 
             # self.temperature_list - list of values with units
             # self.temperature_map - list driver/field pairs
@@ -412,34 +410,10 @@ class TemperatureNode(polyinterface.Node):
     id = 'temperature'
     hint = 0xffffff
     units = 'metric'
-    drivers = [
-            {'driver': 'ST', 'value': 0, 'uom': 17},
-            {'driver': 'GV0', 'value': 0, 'uom': 17}, # feels like
-            {'driver': 'GV1', 'value': 0, 'uom': 17}, # dewpoint
-            {'driver': 'GV2', 'value': 0, 'uom': 17}, # heat index
-            {'driver': 'GV3', 'value': 0, 'uom': 17}  # windchill
-            ]
+    drivers = [ ]
 
     def SetUnits(self, u):
         self.units = u
-        if (u == 'metric'):  # C
-            self.drivers[0]['uom'] = 4
-            self.drivers[1]['uom'] = 4
-            self.drivers[2]['uom'] = 4
-            self.drivers[3]['uom'] = 4
-            self.drivers[4]['uom'] = 4
-        elif (u == 'uk'):  # C
-            self.drivers[0]['uom'] = 4 
-            self.drivers[1]['uom'] = 4
-            self.drivers[2]['uom'] = 4
-            self.drivers[3]['uom'] = 4
-            self.drivers[4]['uom'] = 4
-        elif (u == 'us'):   # F
-            self.drivers[0]['uom'] = 17
-            self.drivers[1]['uom'] = 17
-            selft.drivers[2]['uom'] = 17
-            self.drivers[3]['uom'] = 17
-            self.drivers[4]['uom'] = 17
 
     def Dewpoint(self, t, h):
         b = (17.625 * t) / (243.04 + t)
@@ -508,28 +482,12 @@ class PressureNode(polyinterface.Node):
     id = 'pressure'
     hint = 0xffffff
     units = 'metric'
-    drivers = [
-            {'driver': 'ST', 'value': 0, 'uom': 117},  # abs press
-            {'driver': 'GV0', 'value': 0, 'uom': 117}, # rel press
-            {'driver': 'GV1', 'value': 0, 'uom': 25}  # trend
-            ]
+    drivers = [ ]
     mytrend = []
 
 
     def SetUnits(self, u):
-        # can we dynmically set the drivers here also?
-        # what about the ID, can we dynamically change that to change
-        # the node def?
         self.units = u
-        if (u == 'metric'):  # millibar
-            self.drivers[0]['uom'] = 117
-            self.drivers[1]['uom'] = 117
-        elif (u == 'uk'):  # millibar
-            self.drivers[0]['uom'] = 117 
-            self.drivers[1]['uom'] = 117
-        elif (u == 'us'):   # inHg
-            self.drivers[0]['uom'] = 23
-            self.drivers[1]['uom'] = 23
 
     # convert station pressure in millibars to sealevel pressure
     def toSeaLevel(self, station, elevation):
@@ -577,28 +535,10 @@ class WindNode(polyinterface.Node):
     id = 'wind'
     hint = 0xffffff
     units = 'metric'
-    drivers = [
-            {'driver': 'ST', 'value': 0, 'uom': 32},  # speed
-            {'driver': 'GV0', 'value': 0, 'uom': 76}, # direction
-            {'driver': 'GV1', 'value': 0, 'uom': 32}, # gust
-            {'driver': 'GV2', 'value': 0, 'uom': 76}, # gust direction
-            {'driver': 'GV3', 'value': 0, 'uom': 32} # lull
-            ]
+    drivers = [ ]
 
     def SetUnits(self, u):
         self.units = u
-        if (u == 'metric'):
-            self.drivers[0]['uom'] = 32
-            self.drivers[2]['uom'] = 32
-            self.drivers[4]['uom'] = 32
-        elif (u == 'uk'): 
-            self.drivers[0]['uom'] = 48
-            self.drivers[2]['uom'] = 48
-            self.drivers[4]['uom'] = 48
-        elif (u == 'us'): 
-            self.drivers[0]['uom'] = 48
-            self.drivers[2]['uom'] = 48
-            self.drivers[4]['uom'] = 48
 
     def setDriver(self, driver, value):
         if (driver == 'ST' or driver == 'GV1' or driver == 'GV3'):
@@ -610,14 +550,7 @@ class PrecipitationNode(polyinterface.Node):
     id = 'precipitation'
     hint = 0xffffff
     units = 'metric'
-    drivers = [
-            {'driver': 'ST', 'value': 0, 'uom': 46},  # rate
-            {'driver': 'GV0', 'value': 0, 'uom': 82}, # hourly
-            {'driver': 'GV1', 'value': 0, 'uom': 82}, # daily
-            {'driver': 'GV2', 'value': 0, 'uom': 82}, # weekly
-            {'driver': 'GV3', 'value': 0, 'uom': 82}, # monthly
-            {'driver': 'GV4', 'value': 0, 'uom': 82}  # yearly
-            ]
+    drivers = [ ]
     hourly_rain = 0
     daily_rain = 0
     weekly_rain = 0
@@ -630,27 +563,6 @@ class PrecipitationNode(polyinterface.Node):
 
     def SetUnits(self, u):
         self.units = u
-        if (u == 'metric'):
-            self.drivers[0]['uom'] = 46
-            self.drivers[1]['uom'] = 82
-            self.drivers[2]['uom'] = 82
-            self.drivers[3]['uom'] = 82
-            self.drivers[4]['uom'] = 82
-            self.drivers[5]['uom'] = 82
-        elif (u == 'uk'): 
-            self.drivers[0]['uom'] = 46
-            self.drivers[1]['uom'] = 82
-            self.drivers[2]['uom'] = 82
-            self.drivers[3]['uom'] = 82
-            self.drivers[4]['uom'] = 82
-            self.drivers[5]['uom'] = 82
-        elif (u == 'us'): 
-            self.drivers[0]['uom'] = 24
-            self.drivers[1]['uom'] = 105
-            self.drivers[2]['uom'] = 105
-            self.drivers[3]['uom'] = 105
-            self.drivers[4]['uom'] = 105
-            self.drivers[5]['uom'] = 105
 
     def hourly_accumulation(self, r):
         current_hour = datetime.datetime.now().hour
@@ -689,11 +601,7 @@ class LightNode(polyinterface.Node):
     id = 'light'
     units = 'metric'
     hint = 0xffffff
-    drivers = [
-            {'driver': 'ST', 'value': 0, 'uom': 71},  # UV
-            {'driver': 'GV0', 'value': 0, 'uom': 74},  # solar radiation
-            {'driver': 'GV1', 'value': 0, 'uom': 36},  # Lux
-            ]
+    drivers = [ ]
 
     def SetUnits(self, u):
         self.units = u
@@ -705,22 +613,10 @@ class LightningNode(polyinterface.Node):
     id = 'lightning'
     hint = 0xffffff
     units = 'metric'
-    drivers = [
-            {'driver': 'ST', 'value': 0, 'uom': 25},  # Strikes
-            {'driver': 'GV0', 'value': 0, 'uom': 83},  # Distance
-            ]
+    drivers = [ ]
 
     def SetUnits(self, u):
         self.units = u
-        if (u == 'metric'):
-            self.drivers[0]['uom'] = 25
-            self.drivers[1]['uom'] = 83
-        elif (u == 'uk'): 
-            self.drivers[0]['uom'] = 25
-            self.drivers[1]['uom'] = 116
-        elif (u == 'us'): 
-            self.drivers[0]['uom'] = 25
-            self.drivers[1]['uom'] = 116
 
     def setDriver(self, driver, value):
         if (driver == 'GV0'):
