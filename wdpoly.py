@@ -14,6 +14,7 @@ import math
 import threading
 import struct
 import write_profile
+import uom
 
 LOGGER = polyinterface.LOGGER
 
@@ -89,15 +90,98 @@ class Controller(polyinterface.Controller):
                 - Precipitation (rate, hourly, daily, weekly, monthly, yearly)
                 - Light (UV, solar radiation, lux)
                 - Lightning (strikes, distance)
+
+        The nodes need to have thier drivers configured based on the user
+        supplied configuration. To that end, we should probably create the
+        node, update the driver list, set the units and then add the node.
         """
-        LOGGER.info("Discovering/creating nodes.")
-        self.addNode(TemperatureNode(self, self.address, 'temperature', 'Temperatures'))
-        self.addNode(HumidityNode(self, self.address, 'humidity', 'Humidity'))
-        self.addNode(PressureNode(self, self.address, 'pressure', 'Barometric Pressure'))
-        self.addNode(WindNode(self, self.address, 'wind', 'Wind'))
-        self.addNode(PrecipitationNode(self, self.address, 'rain', 'Precipitation'))
-        self.addNode(LightNode(self, self.address, 'light', 'Illumination'))
-        self.addNode(LightningNode(self, self.address, 'lightning', 'Lightning'))
+        LOGGER.info("Creating nodes.")
+
+        if len(self.temperature_map) > 0:
+            LOGGER.info("Creating Temperature node")
+            node = TemperatureNode(self, self.address, 'temperature',
+                    'Temperatures')
+            LOGGER.info("Set units maybe?")
+            node.SetUnits(self.units)
+            LOGGER.info("Clear drivers from node")
+            node.drivers = []
+
+            # self.temperature_list - list of values with units
+            # self.temperature_map - list driver/field pairs
+            # if we added units to the driver/field list, that would help.
+            for d in self.temperature_map:
+                # {'driver': 'ST', 'value': 0, 'uom': 2},
+                LOGGER.info("driver = {'driver': %s, 'value': 0, 'uom': %s}" % (d[0], uom.UOM[d[2]]))
+                node.drivers.append(
+                    {'driver': d[0], 'value': 0, 'uom': uom.UOM[d[2]]}
+                    )
+            self.addNode(node)
+
+        if len(self.humidity_map) > 0:
+            LOGGER.info("Creating Humidity node")
+            node = HumidityNode(self, self.address, 'humidity', 'Humidity')
+            for d in self.humidity_map:
+                node.drivers.append(
+                    {'driver': d[0], 'value': 0, 'uom': uom.UOM[d[2]]}
+                    )
+            self.addNode(node)
+
+        if len(self.pressure_map) > 0:
+            LOGGER.info("Creating Pressure node")
+            node = PressureNode(self, self.address, 'pressure', 'Barometric Pressure')
+            node.SetUnits(self.units)
+            for d in self.pressure_map:
+                node.drivers.append(
+                    {'driver': d[0], 'value': 0, 'uom': uom.UOM[d[2]]}
+                    )
+            self.addNode(node)
+
+        if len(self.wind_map) > 0:
+            LOGGER.info("Creating Wind node")
+            node = WindNode(self, self.address, 'wind', 'Wind')
+            node.SetUnits(self.units)
+            for d in self.wind_map:
+                node.drivers.append(
+                    {'driver': d[0], 'value': 0, 'uom': uom.UOM[d[2]]}
+                    )
+            self.addNode(node)
+
+        if len(self.rain_map) > 0:
+            LOGGER.info("Creating Precipitation node")
+            node = PrecipitationNode(self, self.address, 'rain', 'Precipitation')
+            node.SetUnits(self.units)
+            for d in self.rain_map:
+                node.drivers.append(
+                    {'driver': d[0], 'value': 0, 'uom': uom.UOM[d[2]]}
+                    )
+            self.addNode(node)
+
+        if len(self.light_map) > 0:
+            LOGGER.info("Creating Light node")
+            node = LightNode(self, self.address, 'light', 'Illumination')
+            for d in self.light_map:
+                node.drivers.append(
+                    {'driver': d[0], 'value': 0, 'uom': uom.UOM[d[2]]}
+                    )
+            self.addNode(node)
+
+        if len(self.lightning_map) > 0:
+            LOGGER.info("Creating Lightning node")
+            node = LightningNode(self, self.address, 'Lightning', 'Lightning')
+            node.SetUnits(self.units)
+            for d in self.lightning_map:
+                node.drivers.append(
+                    {'driver': d[0], 'value': 0, 'uom': uom.UOM[d[2]]}
+                    )
+            self.addNode(node)
+
+
+        #self.addNode(HumidityNode(self, self.address, 'humidity', 'Humidity'))
+        #self.addNode(PressureNode(self, self.address, 'pressure', 'Barometric Pressure'))
+        #self.addNode(WindNode(self, self.address, 'wind', 'Wind'))
+        #self.addNode(PrecipitationNode(self, self.address, 'rain', 'Precipitation'))
+        #self.addNode(LightNode(self, self.address, 'light', 'Illumination'))
+        #self.addNode(LightningNode(self, self.address, 'lightning', 'Lightning'))
 
     def delete(self):
         self.stopping = True
@@ -143,52 +227,66 @@ class Controller(polyinterface.Controller):
             # is a 2 element list (or a dictionary?)
 
             if vmap[0] == 'temperature':
-                mapper = [ write_profile.TEMP_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key] ]
-                self.temperature_map.append(mapper)
                 self.temperature_list[vmap[1]] = 'TEMP_F' if self.units == 'us' else 'TEMP_C'
+                mapper = [ write_profile.TEMP_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key],
+                        self.temperature_list[vmap[1]]
+                        ]
+                self.temperature_map.append(mapper)
             elif vmap[0] == 'humidity':
-                mapper = [ write_profile.HUMD_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key] ]
-                self.humidity_map.append(mapper)
                 self.humidity_list[vmap[1]] = 'I_HUMIDITY'
+                mapper = [ write_profile.HUMD_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key],
+                        self.humidity_list[vmap[1]]
+                        ]
+                self.humidity_map.append(mapper)
             elif vmap[0] == 'pressure':
-                mapper = [ write_profile.PRES_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key] ]
-                self.pressure_map.append(mapper)
                 if vmap[1] == 'trend':
                     self.pressure_list[vmap[1]] = 'I_TREND'
                 else:
                     self.pressure_list[vmap[1]] = 'I_INHG' if self.units == 'us' else 'I_MB'
+                mapper = [ write_profile.PRES_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key],
+                        self.pressure_list[vmap[1]]
+                        ]
+                self.pressure_map.append(mapper)
             elif vmap[0] == 'wind':
-                mapper = [ write_profile.WIND_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key] ]
-                self.wind_map.append(mapper)
                 if 'speed' in vmap[1]:
-                    self.wind_list[vmap[1]] = 'I_MS' if self.units == 'metric' else 'I_MPH'
+                    self.wind_list[vmap[1]] = 'I_KPH' if self.units == 'metric' else 'I_MPH'
                 else:
                     self.wind_list[vmap[1]] = 'I_DEGREE'
+                mapper = [ write_profile.WIND_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key],
+                        self.wind_list[vmap[1]]
+                        ]
+                self.wind_map.append(mapper)
             elif vmap[0] == 'rain':
-                mapper = [ write_profile.RAIN_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key] ]
-                self.rain_map.append(mapper)
                 if 'rate' in vmap[1]:
                     self.rain_list[vmap[1]] = 'I_MMHR' if self.units == 'metric' else 'I_INHR'
                 else:
                     self.rain_list[vmap[1]] = 'I_MM' if self.units == 'metric' else 'I_INCH'
+                mapper = [ write_profile.RAIN_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key],
+                        self.rain_list[vmap[1]]
+                        ]
+                self.rain_map.append(mapper)
             elif vmap[0] == 'light':
-                mapper = [ write_profile.LITE_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key] ]
-                self.light_map.append(mapper)
                 self.light_list[vmap[1]] = write_profile.LITE_EDIT[vmap[1]]
+                mapper = [ write_profile.LITE_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key],
+                        self.light_list[vmap[1]]
+                        ]
+                self.light_map.append(mapper)
             elif vmap[0] == 'lightning':
-                mapper = [ write_profile.LTNG_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key] ]
-                self.lightning_map.append(mapper)
                 if 'strike' in vmap[1]:
                     self.lightning_list[vmap[1]] = 'I_STRIKES'
                 else:
                     self.lightning_list[vmap[1]] = 'I_KM' if self.units == 'metric' else 'I_MILE'
+                mapper = [ write_profile.LTNG_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key],
+                        self.lightning_list[vmap[1]]
+                        ]
+                self.lightning_map.append(mapper)
 
         # Make sure they are in the params
         LOGGER.info("Adding configuation")
