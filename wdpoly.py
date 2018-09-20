@@ -34,7 +34,12 @@ class Controller(polyinterface.Controller):
         self.light_list = {}
         self.lightning_list = {}
         self.temperature_map = []
-        self.mapping = {}
+        self.humidity_map = []
+        self.pressure_map = []
+        self.wind_map = []
+        self.rain_map = []
+        self.light_map = []
+        self.lightning_map = []
 
         try:
             self.polyConfig
@@ -128,7 +133,6 @@ class Controller(polyinterface.Controller):
         # look like temperature.main and the value will be WD field #
         LOGGER.info("Trying to create a mapping")
         for key in self.polyConfig['customParams']:
-            LOGGER.info('key = ' + key)
             if not '-' in key:
                 LOGGER.info("skipping " + key)
                 continue
@@ -138,26 +142,53 @@ class Controller(polyinterface.Controller):
             # Mapping needs to be a list for each node and each list item
             # is a 2 element list (or a dictionary?)
 
-            LOGGER.info("%s: %s %s" % (key, vmap[0], vmap[1]))
             if vmap[0] == 'temperature':
-                LOGGER.info('append to temperature_map')
-                LOGGER.info('0 = %s, 1 = %s' % (write_profile.TEMP_DRVS[vmap[1]], self.polyConfig['customParams'][key]))
-                mapper = [ write_profile.TEMP_DRVS[vmap[1]], self.polyConfig['customParams'][key] ]
+                mapper = [ write_profile.TEMP_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key] ]
                 self.temperature_map.append(mapper)
-                LOGGER.info('add to temperature_list')
-                self.temperature_list[vmap[1]] = 'TEMP_F'
+                self.temperature_list[vmap[1]] = 'TEMP_F' if self.units == 'us' else 'TEMP_C'
             elif vmap[0] == 'humidity':
+                mapper = [ write_profile.HUMD_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key] ]
+                self.humidity_map.append(mapper)
                 self.humidity_list[vmap[1]] = 'I_HUMIDITY'
             elif vmap[0] == 'pressure':
-                self.pressure_list[vmap[1]] = 'I_MB'
+                mapper = [ write_profile.PRES_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key] ]
+                self.pressure_map.append(mapper)
+                if vmap[1] == 'trend':
+                    self.pressure_list[vmap[1]] = 'I_TREND'
+                else:
+                    self.pressure_list[vmap[1]] = 'I_INHG' if self.units == 'us' else 'I_MB'
             elif vmap[0] == 'wind':
-                self.wind_list[vmap[1]] = 'I_MPH'
+                mapper = [ write_profile.WIND_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key] ]
+                self.wind_map.append(mapper)
+                if 'speed' in vmap[1]:
+                    self.wind_list[vmap[1]] = 'I_MS' if self.units == 'metric' else 'I_MPH'
+                else:
+                    self.wind_list[vmap[1]] = 'I_DEGREE'
             elif vmap[0] == 'rain':
-                self.rain_list[vmap[1]] = 'I_MM'
+                mapper = [ write_profile.RAIN_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key] ]
+                self.rain_map.append(mapper)
+                if 'rate' in vmap[1]:
+                    self.rain_list[vmap[1]] = 'I_MMHR' if self.units == 'metric' else 'I_INHR'
+                else:
+                    self.rain_list[vmap[1]] = 'I_MM' if self.units == 'metric' else 'I_INCH'
             elif vmap[0] == 'light':
-                self.light_list[vmap[1]] = 'I_UV'
+                mapper = [ write_profile.LITE_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key] ]
+                self.light_map.append(mapper)
+                self.light_list[vmap[1]] = write_profile.LITE_EDIT[vmap[1]]
             elif vmap[0] == 'lightning':
-                self.lightning_list[vmap[1]] = 'I_STRIKES'
+                mapper = [ write_profile.LTNG_DRVS[vmap[1]],
+                        self.polyConfig['customParams'][key] ]
+                self.lightning_map.append(mapper)
+                if 'strike' in vmap[1]:
+                    self.lightning_list[vmap[1]] = 'I_STRIKES'
+                else:
+                    self.lightning_list[vmap[1]] = 'I_KM' if self.units == 'metric' else 'I_MILE'
 
         # Make sure they are in the params
         LOGGER.info("Adding configuation")
@@ -170,7 +201,15 @@ class Controller(polyinterface.Controller):
                     'temperature-windchill': 44,
                     'humidity-main': 5,
                     'pressure-sealevel': 6,
-                    'pressure-trend': 50})
+                    'pressure-trend': 50,
+                    'wind-windspeed': 2,
+                    'wind-winddir': 3,
+                    'rain-rate': 10,
+                    'rain-weekly': 7,
+                    'rain-monthly': 8,
+                    'rain-yearly': 9,
+                    'light-uv': 34,
+                    })
 
         # Build the node definition
         LOGGER.info('Try to create node definition profile based on config.')
