@@ -217,6 +217,12 @@ class Controller(polyinterface.Controller):
                 self.humidity_list, self.pressure_list, self.wind_list,
                 self.rain_list, self.light_list, self.lightning_list)
 
+        # push updated profile to ISY
+        try:
+            self.poly.installprofile()
+        except:
+            LOGGER.error('Failed up push profile to ISY')
+
         # Remove all existing notices
         LOGGER.info("remove all notices")
         self.removeNoticesAll()
@@ -324,21 +330,18 @@ class TemperatureNode(polyinterface.Node):
             self.drivers[2]['uom'] = 4
             self.drivers[3]['uom'] = 4
             self.drivers[4]['uom'] = 4
-            self.id = 'temperature'
         elif (u == 'uk'):  # C
             self.drivers[0]['uom'] = 4 
             self.drivers[1]['uom'] = 4
             self.drivers[2]['uom'] = 4
             self.drivers[3]['uom'] = 4
             self.drivers[4]['uom'] = 4
-            self.id = 'temperatureUK'
         elif (u == 'us'):   # F
             self.drivers[0]['uom'] = 17
             self.drivers[1]['uom'] = 17
             selft.drivers[2]['uom'] = 17
             self.drivers[3]['uom'] = 17
             self.drivers[4]['uom'] = 17
-            self.id = 'temperatureUS'
 
     def Dewpoint(self, t, h):
         b = (17.625 * t) / (243.04 + t)
@@ -423,15 +426,12 @@ class PressureNode(polyinterface.Node):
         if (u == 'metric'):  # millibar
             self.drivers[0]['uom'] = 117
             self.drivers[1]['uom'] = 117
-            self.id = 'pressure'
         elif (u == 'uk'):  # millibar
             self.drivers[0]['uom'] = 117 
             self.drivers[1]['uom'] = 117
-            self.id = 'pressureUK'
         elif (u == 'us'):   # inHg
             self.drivers[0]['uom'] = 23
             self.drivers[1]['uom'] = 23
-            self.id = 'pressureUS'
 
     # convert station pressure in millibars to sealevel pressure
     def toSeaLevel(self, station, elevation):
@@ -493,17 +493,14 @@ class WindNode(polyinterface.Node):
             self.drivers[0]['uom'] = 32
             self.drivers[2]['uom'] = 32
             self.drivers[4]['uom'] = 32
-            self.id = 'wind'
         elif (u == 'uk'): 
             self.drivers[0]['uom'] = 48
             self.drivers[2]['uom'] = 48
             self.drivers[4]['uom'] = 48
-            self.id = 'windUK'
         elif (u == 'us'): 
             self.drivers[0]['uom'] = 48
             self.drivers[2]['uom'] = 48
             self.drivers[4]['uom'] = 48
-            self.id = 'windUS'
 
     def setDriver(self, driver, value):
         if (driver == 'ST' or driver == 'GV1' or driver == 'GV3'):
@@ -542,7 +539,6 @@ class PrecipitationNode(polyinterface.Node):
             self.drivers[3]['uom'] = 82
             self.drivers[4]['uom'] = 82
             self.drivers[5]['uom'] = 82
-            self.id = 'precipitation'
         elif (u == 'uk'): 
             self.drivers[0]['uom'] = 46
             self.drivers[1]['uom'] = 82
@@ -550,7 +546,6 @@ class PrecipitationNode(polyinterface.Node):
             self.drivers[3]['uom'] = 82
             self.drivers[4]['uom'] = 82
             self.drivers[5]['uom'] = 82
-            self.id = 'precipitationUK'
         elif (u == 'us'): 
             self.drivers[0]['uom'] = 24
             self.drivers[1]['uom'] = 105
@@ -558,7 +553,6 @@ class PrecipitationNode(polyinterface.Node):
             self.drivers[3]['uom'] = 105
             self.drivers[4]['uom'] = 105
             self.drivers[5]['uom'] = 105
-            self.id = 'precipitationUS'
 
     def hourly_accumulation(self, r):
         current_hour = datetime.datetime.now().hour
@@ -623,15 +617,12 @@ class LightningNode(polyinterface.Node):
         if (u == 'metric'):
             self.drivers[0]['uom'] = 25
             self.drivers[1]['uom'] = 83
-            self.id = 'lightning'
         elif (u == 'uk'): 
             self.drivers[0]['uom'] = 25
             self.drivers[1]['uom'] = 116
-            self.id = 'lightningUK'
         elif (u == 'us'): 
             self.drivers[0]['uom'] = 25
             self.drivers[1]['uom'] = 116
-            self.id = 'lightningUS'
 
     def setDriver(self, driver, value):
         if (driver == 'GV0'):
