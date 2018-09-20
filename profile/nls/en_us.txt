@@ -7,8 +7,6 @@ CMD-ctl-REMOVE_NOTICES_ALL-NAME = Remove Notices
 ST-ctl-ST-NAME = NodeServer Online
 ST-ctl-GV0-NAME = Battery
 ST-ctl-GV1-NAME = Battery
-ST-ctl-GV2-NAME = Air RSSI
-ST-ctl-GV3-NAME = Sky RSSI
 
 # mynodetype
 ND-temperature-NAME = Temperatures
