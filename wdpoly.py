@@ -352,33 +352,46 @@ class Controller(polyinterface.Controller):
             # is there a good way to embed the field definition here?
 
             LOGGER.info('Got: ' + fields[4] + ', ' + fields[5] + ', ' + fields[6])
-            self.nodes['pressure'].setDriver('GV0', float(fields[6]))
-            self.nodes['pressure'].setDriver('GV1', fields[50])
-            self.nodes['temperature'].setDriver('ST', float(fields[4]))
-            self.nodes['temperature'].setDriver('GV2', float(fields[45]))
-            self.nodes['temperature'].setDriver('GV3', float(fields[44]))
 
-            # both apparent temp and dewpoint are listed but at indexes
-            # higher than what we're seeing in the data
-            fl = self.nodes['temperature'].ApparentTemp(float(fields[4]), float(fields[2]), float(fields[5]))
-            self.nodes['temperature'].setDriver('GV0', fl)
+            # loop through the various mappings and update the drivers.
+            if len(self.temperature_map) > 0:
+                for d in self.temperature_map:
+                    self.nodes['temperature'].setDriver(d[0], float(fields[d[1]]))
 
-            dp = self.nodes['temperature'].Dewpoint(float(fields[4]), float(fields[5]))
-            self.nodes['temperature'].setDriver('GV1', dp)
+                # both apparent temp and dewpoint are listed but at indexes
+                # higher than what we're seeing in the data
+                fl = self.nodes['temperature'].ApparentTemp(float(fields[4]),
+                    float(fields[2]), float(fields[5]))
+                self.nodes['temperature'].setDriver('GV3', fl)
 
-            self.nodes['humidity'].setDriver('ST', int(fields[5]))
+                dp = self.nodes['temperature'].Dewpoint(float(fields[4]),
+                    float(fields[5]))
+                self.nodes['temperature'].setDriver('GV0', dp)
 
-            self.nodes['lightning'].setDriver('ST', int(fields[33]))
+            if len(self.humidity_map) > 0:
+                for d in self.humidity_map:
+                    LOGGER.info("humidity: %s %s %s" % (d[0], d[1], d[2]))
+                    self.nodes['humidity'].setDriver(d[0], int(fields[d[1]]))
 
-            self.nodes['wind'].setDriver('ST', float(fields[2]))
-            self.nodes['wind'].setDriver('GV0', int(fields[3]))
+            if len(self.pressure_map) > 0:
+                for d in self.pressure_map:
+                    self.nodes['pressure'].setDriver(d[0], float(fields[d[1]]))
 
-            self.nodes['light'].setDriver('GV0', float(fields[34]))
+            if len(self.lightning_map) > 0:
+                for d in self.lightning_map:
+                    self.nodes['lightning'].setDriver(d[0], int(fields[d[1]]))
 
-            self.nodes['rain'].setDriver('ST', float(fields[10]))
-            self.nodes['rain'].setDriver('GV2', float(fields[7]))
-            self.nodes['rain'].setDriver('GV3', float(fields[8]))
-            self.nodes['rain'].setDriver('GV4', float(fields[9]))
+            if len(self.wind_map) > 0:
+                for d in self.wind_map:
+                    self.nodes['wind'].setDriver(d[0], float(fields[d[1]]))
+
+            if len(self.light_map) > 0:
+                for d in self.light_map:
+                    self.nodes['light'].setDriver(d[0], float(fields[d[1]]))
+
+            if len(self.rain_map) > 0:
+                for d in self.rain_map:
+                    self.nodes['rain'].setDriver(d[0], float(fields[d[1]]))
 
 
     def SetUnits(self, u):
