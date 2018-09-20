@@ -70,7 +70,7 @@ The settings for this node are:
 
         pressure-station : n/a
         pressure-sealevel : 6
-        pressure-trend : n/a (calculated)
+        pressure-trend : 50
 
         wind-windspeed : 2
         wind-winddir : 3
