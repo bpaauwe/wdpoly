@@ -1,66 +1,74 @@
 # controller
-ND-WeatherFlow-NAME = WeatherFlow station
-ND-WeatherFlow-ICON = Weather
+ND-WeatherDisplay-NAME = Weather Display
+ND-WeatherDisplay-ICON = Weather
 CMD-ctl-DISCOVER-NAME = Re-Discover
 CMD-ctl-UPDATE_PROFILE-NAME = Update Profile
 CMD-ctl-REMOVE_NOTICES_ALL-NAME = Remove Notices
 ST-ctl-ST-NAME = NodeServer Online
-ST-ctl-GV0-NAME = Air Battery
-ST-ctl-GV1-NAME = Sky Battery
+ST-ctl-GV0-NAME = Battery
+ST-ctl-GV1-NAME = Battery
 ST-ctl-GV2-NAME = Air RSSI
 ST-ctl-GV3-NAME = Sky RSSI
 
 # mynodetype
 ND-temperature-NAME = Temperatures
 ND-temperature-ICON = Input
-ND-temperatureUK-NAME = Temperatures
-ND-temperatureUK-ICON = Input
-ND-temperatureUS-NAME = Temperatures
-ND-temperatureUS-ICON = Input
 ST-139T-ST-NAME = Temperature
-ST-139T-GV0-NAME = Apparent Temperature
-ST-139T-GV1-NAME = DewPoint
+ST-139T-GV0-NAME = DewPoint
+ST-139T-GV1-NAME = Windchill
 ST-139T-GV2-NAME = Heat Index
-ST-139T-GV3-NAME = Windchill
+ST-139T-GV3-NAME = Apparent Temperature
+ST-139T-GV4-NAME = Inside Temperature
+ST-139T-GV5-NAME = Extra Temperature 1
+ST-139T-GV6-NAME = Extra Temperature 2
+ST-139T-GV7-NAME = Extra Temperature 3
+ST-139T-GV8-NAME = Extra Temperature 4
+ST-139T-GV9-NAME = Extra Temperature 5
+ST-139T-GV10-NAME = Extra Temperature 6
+ST-139T-GV11-NAME = Extra Temperature 7
+ST-139T-GV12-NAME = Extra Temperature 8
+ST-139T-GV13-NAME = Extra Temperature 9
+ST-139T-GV14-NAME = Extra Temperature 10
+ST-139T-GV15-NAME = Maximum Temperature
+ST-139T-GV16-NAME = Minimum Temperature
+ST-139T-GV17-NAME = Soil Temperature
 
 ND-humidity-NAME = Humidity
 ND-humidity-ICON = Input
 ST-139H-ST-NAME = Humidity
+ST-139H-GV0-NAME = Inside Humidity
+ST-139H-GV1-NAME = Extra Humidity 1
+ST-139H-GV2-NAME = Extra Humidity 2
+ST-139H-GV3-NAME = Extra Humidity 3
+ST-139H-GV4-NAME = Extra Humidity 4
+ST-139H-GV5-NAME = Extra Humidity 5
 
 ND-pressure-NAME = Barometric Pressures
 ND-pressure-ICON = Input
-ND-pressureUK-NAME = Barometric Pressures
-ND-pressureUK-ICON = Input
-ND-pressureUS-NAME = Barometric Pressures
-ND-pressureUS-ICON = Input
 ST-139P-ST-NAME = Absolute Pressure
 ST-139P-GV0-NAME = Relative Pressure
 ST-139P-GV1-NAME = Pressure Trend
 
 ND-wind-NAME = Wind
 ND-wind-ICON = Input
-ND-windUK-NAME = Wind
-ND-windUK-ICON = Input
-ND-windUS-NAME = Wind
-ND-windUS-ICON = Input
 ST-139W-ST-NAME = Wind Speed
 ST-139W-GV0-NAME = Wind Direction
 ST-139W-GV1-NAME = Gust Speed
 ST-139W-GV2-NAME = Gust Direction
 ST-139W-GV3-NAME = Lull Speed
+ST-139W-GV4-NAME = Average Wind Speed
 
 ND-precipitation-NAME = Rainfall
 ND-precipitation-ICON = Input
-ND-precipitationUK-NAME = Rainfall
-ND-precipitationUK-ICON = Input
-ND-precipitationUS-NAME = Rainfall
-ND-precipitationUS-ICON = Input
 ST-139R-ST-NAME = Rain Rate
 ST-139R-GV0-NAME = Hourly Rainfall
 ST-139R-GV1-NAME = Daily Rainfall
 ST-139R-GV2-NAME = Weekly Rainfall
 ST-139R-GV3-NAME = Monthly Rainfall
 ST-139R-GV4-NAME = Yearly Rainfall
+ST-139R-GV5-NAME = Max Daily Rainfall
+ST-139R-GV6-NAME = Rainfall Yesterday
+
 
 ND-light-NAME = Light
 ND-light-ICON = Input
@@ -70,10 +78,6 @@ ST-139L-GV1-NAME = Illumination
 
 ND-lightning-NAME = Lightning Strike
 ND-lightning-ICON = Input
-ND-lightningUK-NAME = Lightning Strike
-ND-lightningUK-ICON = Input
-ND-lightningUS-NAME = Lightning Strike
-ND-lightningUS-ICON = Input
 ST-139S-ST-NAME = Strikes
 ST-139S-GV0-NAME = Distance
 
