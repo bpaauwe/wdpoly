@@ -95,12 +95,14 @@ RAIN_DRVS = {
 LITE_DRVS = {
         'uv' : 'ST',
         'solar_radiation' : 'GV0',
-        'illuminace' : 'GV1'
+        'illuminace' : 'GV1',
+        'solar_percent' : 'GV2'
         }
 LITE_EDIT = {
         'uv' : 'I_UV',
         'solar_radiation' : 'I_RADIATION',
-        'illuminace' : 'I_LUX'
+        'illuminace' : 'I_LUX',
+        'solar_percent' : 'I_HUMIDITY'
         }
 
 
@@ -289,7 +291,7 @@ if __name__ == "__main__":
     pl = {'station' : 'I_INHG', 'trend' : 'I_TREND'}
     wl = {'windspeed' : 'I_MPH', 'gustspeed' : 'I_MPH', 'winddir' : 'I_DEGREE'}
     rl = {'hourly': 'I_MM', 'monthly': 'I_MM', 'yearly': 'I_MM'}
-    ll = {'uv' : 'I_UV'}
+    ll = {'solar_percent' : 'I_HUMIDITY'}
     sl = {}
 
     # Only write the profile if the version is updated.

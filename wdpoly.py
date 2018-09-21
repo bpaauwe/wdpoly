@@ -304,7 +304,7 @@ class Controller(polyinterface.Controller):
                     'rain-weekly': 7,
                     'rain-monthly': 8,
                     'rain-yearly': 9,
-                    'light-uv': 34,
+                    'light-soloar_percent': 34,
                     })
 
         # Build the node definition

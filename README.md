@@ -89,9 +89,10 @@ The settings for this node are:
         rain-maxrate : 11
         rain-yesterday : 19
 
-        light-uv : 34
+        light-uv : n/a
         light-solar_radiation : n/a
         light-illuminace : n/a
+	light-solar_percent: 34
 
         lightning-strikes : 33
         lightning-distance : n/a
