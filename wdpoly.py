@@ -41,6 +41,7 @@ class Controller(polyinterface.Controller):
         self.rain_map = []
         self.light_map = []
         self.lightning_map = []
+        self.myConfig = {}
 
         try:
             self.polyConfig
@@ -49,14 +50,22 @@ class Controller(polyinterface.Controller):
             LOGGER.info("polyConfig doesn't exist yet")
             self.polyConfig = None
 
-        #self.poly.onConfig(self.process_config)
+        self.poly.onConfig(self.process_config)
 
     def process_config(self, config):
         # this seems to get called twice for every change, why?
         # What does config represent?
-        LOGGER.info("process_config: Enter");
-
-        LOGGER.info("Finished with configuration.")
+        if 'customParams' in config:
+            if config['customParams'] != self.myConfig:
+                self.removeNoticesAll()
+                self.set_configuration(config)
+                self.map_nodes(config)
+                self.discover()
+                if config['customParams']['IPAddress'] != self.myConfig['IPAddress']:
+                    self.addNotice("Restart node server for IP address change to take effect")
+                if config['customParams']['UDPPort'] != self.myConfig['UDPPort']:
+                    self.addNotice("Restart node server for UDP Port change to take effect")
+                self.myConfig = config['customParams']
 
     def start(self):
         LOGGER.info('Starting WeatherDisplay Node Server')
@@ -173,14 +182,6 @@ class Controller(polyinterface.Controller):
                     )
             self.addNode(node)
 
-
-        #self.addNode(HumidityNode(self, self.address, 'humidity', 'Humidity'))
-        #self.addNode(PressureNode(self, self.address, 'pressure', 'Barometric Pressure'))
-        #self.addNode(WindNode(self, self.address, 'wind', 'Wind'))
-        #self.addNode(PrecipitationNode(self, self.address, 'rain', 'Precipitation'))
-        #self.addNode(LightNode(self, self.address, 'light', 'Illumination'))
-        #self.addNode(LightningNode(self, self.address, 'lightning', 'Lightning'))
-
     def delete(self):
         self.stopping = True
         LOGGER.info('Removing WeatherDisplay node server.')
@@ -190,101 +191,8 @@ class Controller(polyinterface.Controller):
         LOGGER.debug('Stopping WeatherDisplay node server.')
 
     def check_params(self):
-        default_port = 1333
-        default_mcast_ip = "231.31.31.31"
-        default_elevation = 0
 
-        LOGGER.info("Check for existing configuration value")
-
-        if 'UDPPort' in self.polyConfig['customParams']:
-            self.udp_port = int(self.polyConfig['customParams']['UDPPort'])
-        else:
-            self.udp_port = default_port
-
-        if 'IPAddress' in self.polyConfig['customParams']:
-            self.mcast_ip = self.polyConfig['customParams']['IPAddress']
-        else:
-            self.mcast_ip = default_mcast_ip
-
-        if 'Units' in self.polyConfig['customParams']:
-            self.units = self.polyConfig['customParams']['Units']
-        else:
-            self.units = 'metric'
-
-        # Build up our data mapping table. The customParams keys will
-        # look like temperature.main and the value will be WD field #
-        LOGGER.info("Trying to create a mapping")
-        for key in self.polyConfig['customParams']:
-            if not '-' in key:
-                LOGGER.info("skipping " + key)
-                continue
-
-            vmap = key.split('-')
-
-            # Mapping needs to be a list for each node and each list item
-            # is a 2 element list (or a dictionary?)
-
-            if vmap[0] == 'temperature':
-                self.temperature_list[vmap[1]] = 'TEMP_F' if self.units == 'us' else 'TEMP_C'
-                mapper = [ write_profile.TEMP_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key],
-                        self.temperature_list[vmap[1]]
-                        ]
-                self.temperature_map.append(mapper)
-            elif vmap[0] == 'humidity':
-                self.humidity_list[vmap[1]] = 'I_HUMIDITY'
-                mapper = [ write_profile.HUMD_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key],
-                        self.humidity_list[vmap[1]]
-                        ]
-                self.humidity_map.append(mapper)
-            elif vmap[0] == 'pressure':
-                if vmap[1] == 'trend':
-                    self.pressure_list[vmap[1]] = 'I_TREND'
-                else:
-                    self.pressure_list[vmap[1]] = 'I_INHG' if self.units == 'us' else 'I_MB'
-                mapper = [ write_profile.PRES_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key],
-                        self.pressure_list[vmap[1]]
-                        ]
-                self.pressure_map.append(mapper)
-            elif vmap[0] == 'wind':
-                if 'speed' in vmap[1]:
-                    self.wind_list[vmap[1]] = 'I_KPH' if self.units == 'metric' else 'I_MPH'
-                else:
-                    self.wind_list[vmap[1]] = 'I_DEGREE'
-                mapper = [ write_profile.WIND_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key],
-                        self.wind_list[vmap[1]]
-                        ]
-                self.wind_map.append(mapper)
-            elif vmap[0] == 'rain':
-                if 'rate' in vmap[1]:
-                    self.rain_list[vmap[1]] = 'I_MMHR' if self.units == 'metric' else 'I_INHR'
-                else:
-                    self.rain_list[vmap[1]] = 'I_MM' if self.units == 'metric' else 'I_INCH'
-                mapper = [ write_profile.RAIN_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key],
-                        self.rain_list[vmap[1]]
-                        ]
-                self.rain_map.append(mapper)
-            elif vmap[0] == 'light':
-                self.light_list[vmap[1]] = write_profile.LITE_EDIT[vmap[1]]
-                mapper = [ write_profile.LITE_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key],
-                        self.light_list[vmap[1]]
-                        ]
-                self.light_map.append(mapper)
-            elif vmap[0] == 'lightning':
-                if 'strike' in vmap[1]:
-                    self.lightning_list[vmap[1]] = 'I_STRIKES'
-                else:
-                    self.lightning_list[vmap[1]] = 'I_KM' if self.units == 'metric' else 'I_MILE'
-                mapper = [ write_profile.LTNG_DRVS[vmap[1]],
-                        self.polyConfig['customParams'][key],
-                        self.lightning_list[vmap[1]]
-                        ]
-                self.lightning_map.append(mapper)
+        self.set_configuration(self.polyConfig)
 
         # Make sure they are in the params
         LOGGER.info("Adding configuation")
@@ -304,8 +212,114 @@ class Controller(polyinterface.Controller):
                     'rain-weekly': 7,
                     'rain-monthly': 8,
                     'rain-yearly': 9,
-                    'light-soloar_percent': 34,
+                    'light-solar_percent': 34,
                     })
+
+        self.map_nodes(self.polyConfig)
+        self.myConfig = self.polyConfig['customParams']
+
+        # Remove all existing notices
+        LOGGER.info("remove all notices")
+        self.removeNoticesAll()
+
+        # Add a notice?
+
+    def set_configuration(self, config):
+        default_port = 1333
+        default_mcast_ip = "231.31.31.31"
+        default_elevation = 0
+
+        LOGGER.info("Check for existing configuration value")
+
+        if 'UDPPort' in config['customParams']:
+            self.udp_port = int(config['customParams']['UDPPort'])
+        else:
+            self.udp_port = default_port
+
+        if 'IPAddress' in config['customParams']:
+            self.mcast_ip = config['customParams']['IPAddress']
+        else:
+            self.mcast_ip = default_mcast_ip
+
+        if 'Units' in config['customParams']:
+            self.units = config['customParams']['Units']
+        else:
+            self.units = 'metric'
+
+    def map_nodes(self, config):
+        # Build up our data mapping table. The customParams keys will
+        # look like temperature.main and the value will be WD field #
+        LOGGER.info("Trying to create a mapping")
+        for key in config['customParams']:
+            if not '-' in key:
+                LOGGER.info("skipping " + key)
+                continue
+
+            vmap = key.split('-')
+            # Mapping needs to be a list for each node and each list item
+            # is a 2 element list (or a dictionary?)
+
+            if vmap[0] == 'temperature':
+                self.temperature_list[vmap[1]] = 'TEMP_F' if self.units == 'us' else 'TEMP_C'
+                mapper = [ write_profile.TEMP_DRVS[vmap[1]],
+                        config['customParams'][key],
+                        self.temperature_list[vmap[1]]
+                        ]
+                self.temperature_map.append(mapper)
+            elif vmap[0] == 'humidity':
+                self.humidity_list[vmap[1]] = 'I_HUMIDITY'
+                mapper = [ write_profile.HUMD_DRVS[vmap[1]],
+                        config['customParams'][key],
+                        self.humidity_list[vmap[1]]
+                        ]
+                self.humidity_map.append(mapper)
+            elif vmap[0] == 'pressure':
+                if vmap[1] == 'trend':
+                    self.pressure_list[vmap[1]] = 'I_TREND'
+                else:
+                    self.pressure_list[vmap[1]] = 'I_INHG' if self.units == 'us' else 'I_MB'
+                mapper = [ write_profile.PRES_DRVS[vmap[1]],
+                        config['customParams'][key],
+                        self.pressure_list[vmap[1]]
+                        ]
+                self.pressure_map.append(mapper)
+            elif vmap[0] == 'wind':
+                if 'speed' in vmap[1]:
+                    self.wind_list[vmap[1]] = 'I_KPH' if self.units == 'metric' else 'I_MPH'
+                else:
+                    self.wind_list[vmap[1]] = 'I_DEGREE'
+                mapper = [ write_profile.WIND_DRVS[vmap[1]],
+                        config['customParams'][key],
+                        self.wind_list[vmap[1]]
+                        ]
+                self.wind_map.append(mapper)
+            elif vmap[0] == 'rain':
+                if 'rate' in vmap[1]:
+                    self.rain_list[vmap[1]] = 'I_MMHR' if self.units == 'metric' else 'I_INHR'
+                else:
+                    self.rain_list[vmap[1]] = 'I_MM' if self.units == 'metric' else 'I_INCH'
+                mapper = [ write_profile.RAIN_DRVS[vmap[1]],
+                        config['customParams'][key],
+                        self.rain_list[vmap[1]]
+                        ]
+                self.rain_map.append(mapper)
+            elif vmap[0] == 'light':
+                self.light_list[vmap[1]] = write_profile.LITE_EDIT[vmap[1]]
+                mapper = [ write_profile.LITE_DRVS[vmap[1]],
+                        config['customParams'][key],
+                        self.light_list[vmap[1]]
+                        ]
+                self.light_map.append(mapper)
+            elif vmap[0] == 'lightning':
+                if 'strike' in vmap[1]:
+                    self.lightning_list[vmap[1]] = 'I_STRIKES'
+                else:
+                    self.lightning_list[vmap[1]] = 'I_KM' if self.units == 'metric' else 'I_MILE'
+                mapper = [ write_profile.LTNG_DRVS[vmap[1]],
+                        config['customParams'][key],
+                        self.lightning_list[vmap[1]]
+                        ]
+                self.lightning_map.append(mapper)
 
         # Build the node definition
         LOGGER.info('Try to create node definition profile based on config.')
@@ -318,12 +332,6 @@ class Controller(polyinterface.Controller):
             self.poly.installprofile()
         except:
             LOGGER.error('Failed up push profile to ISY')
-
-        # Remove all existing notices
-        LOGGER.info("remove all notices")
-        self.removeNoticesAll()
-
-        # Add a notice?
 
     def remove_notices_all(self,command):
         LOGGER.info('remove_notices_all:')
@@ -393,6 +401,8 @@ class Controller(polyinterface.Controller):
                 for d in self.rain_map:
                     self.nodes['rain'].setDriver(d[0], float(fields[d[1]]))
 
+        LOGGER.info('UDP socket closing.')
+        s.close()
 
     def SetUnits(self, u):
         self.units = u
