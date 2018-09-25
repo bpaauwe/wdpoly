@@ -73,6 +73,7 @@ ND-light-ICON = Input
 ST-139L-ST-NAME = UV Index
 ST-139L-GV0-NAME = Solar Radiation
 ST-139L-GV1-NAME = Illumination
+ST-139L-GV2-NAME = Solar Percent
 
 ND-lightning-NAME = Lightning Strike
 ND-lightning-ICON = Input
