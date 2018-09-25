@@ -43,20 +43,15 @@ class Controller(polyinterface.Controller):
         self.lightning_map = []
         self.myConfig = {}
 
-        try:
-            self.polyConfig
-            LOGGER.info("polyConfig DOES exist what's going on?")
-        except NameError:
-            LOGGER.info("polyConfig doesn't exist yet")
-            self.polyConfig = None
-
         self.poly.onConfig(self.process_config)
 
     def process_config(self, config):
         # this seems to get called twice for every change, why?
         # What does config represent?
+        LOGGER.info("Configuration Change...")
         if 'customParams' in config:
             if config['customParams'] != self.myConfig:
+                LOGGER.info("Found difference with saved configuration.")
                 self.removeNoticesAll()
                 self.set_configuration(config)
                 self.map_nodes(config)
@@ -78,6 +73,8 @@ class Controller(polyinterface.Controller):
         #for node in self.nodes:
         #       LOGGER.info (self.nodes[node].name + ' is at index ' + node)
         LOGGER.info('WeatherDisplay Node Server Started.')
+
+        self.remove_old_nodes()
 
     def shortPoll(self):
         pass
@@ -104,13 +101,13 @@ class Controller(polyinterface.Controller):
         supplied configuration. To that end, we should probably create the
         node, update the driver list, set the units and then add the node.
         """
+
         LOGGER.info("Creating nodes.")
 
         if len(self.temperature_map) > 0:
             LOGGER.info("Creating Temperature node")
             node = TemperatureNode(self, self.address, 'temperature',
                     'Temperatures')
-            LOGGER.info("Set units maybe?")
             node.SetUnits(self.units)
 
             # self.temperature_list - list of values with units
@@ -118,7 +115,6 @@ class Controller(polyinterface.Controller):
             # if we added units to the driver/field list, that would help.
             for d in self.temperature_map:
                 # {'driver': 'ST', 'value': 0, 'uom': 2},
-                LOGGER.info("driver = {'driver': %s, 'value': 0, 'uom': %s}" % (d[0], uom.UOM[d[2]]))
                 node.drivers.append(
                     {'driver': d[0], 'value': 0, 'uom': uom.UOM[d[2]]}
                     )
@@ -174,13 +170,36 @@ class Controller(polyinterface.Controller):
 
         if len(self.lightning_map) > 0:
             LOGGER.info("Creating Lightning node")
-            node = LightningNode(self, self.address, 'Lightning', 'Lightning')
+            node = LightningNode(self, self.address, 'lightning', 'Lightning')
             node.SetUnits(self.units)
             for d in self.lightning_map:
                 node.drivers.append(
                     {'driver': d[0], 'value': 0, 'uom': uom.UOM[d[2]]}
                     )
             self.addNode(node)
+
+    def remove_old_nodes(self):
+        if len(self.lightning_map) == 0:
+            LOGGER.info('Deleting orphaned lightning node')
+            self.delNode('lightning')
+        if len(self.temperature_map) == 0:
+            LOGGER.info('Deleting orphaned temperature node')
+            self.delNode('temperature')
+        if len(self.humidity_map) == 0:
+            LOGGER.info('Deleting orphaned humidity node')
+            self.delNode('humidity')
+        if len(self.wind_map) == 0:
+            LOGGER.info('Deleting orphaned wind node')
+            self.delNode('wind')
+        if len(self.light_map) == 0:
+            LOGGER.info('Deleting orphaned light node')
+            self.delNode('light')
+        if len(self.rain_map) == 0:
+            LOGGER.info('Deleting orphaned rain node')
+            self.delNode('rain')
+        if len(self.pressure_map) == 0:
+            LOGGER.info('Deleting orphaned pressure node')
+            self.delNode('pressure')
 
     def delete(self):
         self.stopping = True
