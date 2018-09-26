@@ -383,42 +383,31 @@ class Controller(polyinterface.Controller):
             # loop through the various mappings and update the drivers.
             if len(self.temperature_map) > 0:
                 for d in self.temperature_map:
-                    self.nodes['temperature'].setDriver(d[0], float(fields[d[1]]))
-
-                # both apparent temp and dewpoint are listed but at indexes
-                # higher than what we're seeing in the data
-                fl = self.nodes['temperature'].ApparentTemp(float(fields[4]),
-                    float(fields[2]), float(fields[5]))
-                self.nodes['temperature'].setDriver('GV3', fl)
-
-                dp = self.nodes['temperature'].Dewpoint(float(fields[4]),
-                    float(fields[5]))
-                self.nodes['temperature'].setDriver('GV0', dp)
-
+                    LOGGER.info('%s = %s' % (d[0], d[1]))
+                    self.nodes['temperature'].setDriver(d[0], float(fields[int(d[1])]))
             if len(self.humidity_map) > 0:
                 for d in self.humidity_map:
-                    LOGGER.info("humidity: %s %s %s" % (d[0], d[1], d[2]))
-                    self.nodes['humidity'].setDriver(d[0], int(fields[d[1]]))
+                    self.nodes['humidity'].setDriver(d[0], int(fields[int(d[1])]))
 
             if len(self.pressure_map) > 0:
                 for d in self.pressure_map:
-                    self.nodes['pressure'].setDriver(d[0], float(fields[d[1]]))
+                    self.nodes['pressure'].setDriver(d[0], float(fields[int(d[1])]))
 
             if len(self.lightning_map) > 0:
                 for d in self.lightning_map:
-                    self.nodes['lightning'].setDriver(d[0], int(fields[d[1]]))
+                    self.nodes['lightning'].setDriver(d[0], int(fields[int(d[1])]))
 
             if len(self.wind_map) > 0:
                 for d in self.wind_map:
-                    self.nodes['wind'].setDriver(d[0], float(fields[d[1]]))
+                    self.nodes['wind'].setDriver(d[0], float(fields[int(d[1])]))
 
             if len(self.light_map) > 0:
                 for d in self.light_map:
-                    self.nodes['light'].setDriver(d[0], float(fields[d[1]]))
+                    self.nodes['light'].setDriver(d[0], float(fields[int(d[1])]))
 
             if len(self.rain_map) > 0:
                 for d in self.rain_map:
-                    self.nodes['rain'].setDriver(d[0], float(fields[d[1]]))
+                    self.nodes['rain'].setDriver(d[0], float(fields[int(d[1])]))
 
         LOGGER.info('UDP socket closing.')
         s.close()

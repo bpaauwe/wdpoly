@@ -42,10 +42,10 @@ The settings for this node are:
 
 ```
         temperature-main : 4
-        temperature-dewpoint : n/a (calculated)
+        temperature-dewpoint : 72
         temperature-windchill : 44
-        temperature-heatindex : 45
-        temperature-apparent : n/a (calculated)
+        temperature-heatindex : 112
+        temperature-apparent : 130
         temperature-inside : 12
         temperature-extra1 : 16
         temperature-extra2 : 20
@@ -89,13 +89,13 @@ The settings for this node are:
         rain-maxrate : 11
         rain-yesterday : 19
 
-        light-uv : n/a
-        light-solar_radiation : n/a
+        light-uv : 79
+        light-solar_radiation : 127
         light-illuminace : n/a
 	light-solar_percent: 34
 
         lightning-strikes : 33
-        lightning-distance : n/a
+        lightning-distance : 118
 ```
 
 
