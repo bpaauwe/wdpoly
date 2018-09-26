@@ -109,6 +109,21 @@ The settings for this node are:
    * https://linuxconfig.org/raspbian-gnu-linux-upgrade-from-jessie-to-raspbian-stretch-9
 2. This has only been tested with ISY 5.0.13 so it is not guaranteed to work with any other version.
 
+## Configuring Weather Display
+
+The Weather Display software must be configured to output its data over UDP
+for this node server to function.  To configure Weather Display, go to the
+control panel and select "FTP & Connections METAR/NOAA"
+
+The default multicast IP address of 231.31.31.31 is fine, but if you change it here, then you'll also have to change the node server configuration to match. Depending on how you're running Polyglot, you may need to set a port number > 1000.
+non-root accounts are not able to use ports below 1000 on Linux systems.  Best to set this to something larger, 1333 works.
+
+In the 'Server enabled (connected to weather station) section there are a series of check boxes. Set those as appropriate for your station but make sure "Send complete clientraw" is checked
+
+Toggle the server to enabled (switch button on left should be green) and turn on the main networking switch (switch button on right should be green). 
+
+You may have to restart Weather Display for these changes to fully take effect.
+
 # Upgrading
 
 Open the Polyglot web page, go to nodeserver store and click "Update" for "WeatherFlow".
