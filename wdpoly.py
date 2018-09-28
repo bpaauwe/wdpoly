@@ -69,7 +69,10 @@ class Controller(polyinterface.Controller):
         self.discover()
 
         LOGGER.info('starting thread for UDP data')
-        threading.Thread(target = self.udp_data).start()
+        self.udp = threading.Thread(target = self.udp_data)
+        self.udp.daemon = True;
+        self.udp.start()
+
         #for node in self.nodes:
         #       LOGGER.info (self.nodes[node].name + ' is at index ' + node)
         LOGGER.info('WeatherDisplay Node Server Started.')
@@ -369,21 +372,29 @@ class Controller(polyinterface.Controller):
         mreq = struct.pack("4sl", socket.inet_aton(self.mcast_ip), socket.INADDR_ANY)
         s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
         windspeed = 0
+        counter = 0
 
         LOGGER.info("Starting UDP receive loop")
         while self.stopping == False:
             wd_data = s.recvfrom(1024)
+
+            # Data from Weather Display is being sent every second, that's
+            # way to fast to process and send on to the ISY.  Instead, let's
+            # try every 30th packet
+
+            counter += 1
+            if counter < 30:
+                continue # skip this data
+
+            LOGGER.info('Counter: %d' % counter)
+            counter = 0
+
             data = wd_data[0].decode("utf-8") # wd_data is a truple (data, ip, port)
             fields = data.split()
-
-            # is there a good way to embed the field definition here?
-
-            LOGGER.info('Got: ' + fields[4] + ', ' + fields[5] + ', ' + fields[6])
 
             # loop through the various mappings and update the drivers.
             if len(self.temperature_map) > 0:
                 for d in self.temperature_map:
-                    LOGGER.info('%s = %s' % (d[0], d[1]))
                     self.nodes['temperature'].setDriver(d[0], float(fields[int(d[1])]))
             if len(self.humidity_map) > 0:
                 for d in self.humidity_map:
