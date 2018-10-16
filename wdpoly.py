@@ -541,7 +541,7 @@ class PressureNode(polyinterface.Node):
 
         l = a / (i * r)
         c = i * r / a
-        u = math.pow(1 + math.pow(s / station, c) * (r * elevation / n), 1)
+        u = math.pow(1 + math.pow(s / station, c) * (r * elevation / n), l)
 
         return (round((station * u), 3))
 
