@@ -136,5 +136,7 @@ The Weather Display nodeserver keeps track of the version number and when a prof
 
 # Release Notes
 
+- 0.2.1 03/20/2019
+   - Fix online status going false after query.
 - 0.1.0 09/14/2018
    - Initial version released published to github
