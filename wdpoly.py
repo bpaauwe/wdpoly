@@ -231,7 +231,7 @@ class Controller(polyinterface.Controller):
                     'wind-windspeed': 2,
                     'wind-winddir': 3,
                     'rain-rate': 10,
-                    'rain-weekly': 7,
+                    'rain-daily': 7,
                     'rain-monthly': 8,
                     'rain-yearly': 9,
                     'light-solar_percent': 34,
