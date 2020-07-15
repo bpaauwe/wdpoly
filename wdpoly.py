@@ -583,7 +583,7 @@ class WindNode(polyinterface.Node):
         self.units = u
 
     def setDriver(self, driver, value):
-        if (driver == 'ST' or driver == 'GV1' or driver == 'GV3'):
+        if (driver == 'ST' or driver == 'GV1' or driver == 'GV3' or driver == 'GV4'):
             if (self.units != 'metric'):
                 value = round(value / 1.609344, 2)
         super(WindNode, self).setDriver(driver, value, report=True, force=True)
