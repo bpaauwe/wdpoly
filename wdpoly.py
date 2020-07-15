@@ -585,7 +585,9 @@ class WindNode(polyinterface.Node):
     def setDriver(self, driver, value):
         if (driver == 'ST' or driver == 'GV1' or driver == 'GV3'):
             if (self.units != 'metric'):
-                value = round(value / 1.609344, 2)
+                value = round(value * 1.15077945, 2)
+            else:
+                value = round(value * 1.852, 2)
         super(WindNode, self).setDriver(driver, value, report=True, force=True)
 
 class PrecipitationNode(polyinterface.Node):
