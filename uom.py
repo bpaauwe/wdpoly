@@ -3,8 +3,8 @@
 # Map the editor ID to the ISY UOM number
 
 UOM = {
-        'TEMP_C': 4,
-        'TEMP_F': 17,
+        'I_TEMP_C': 4,
+        'I_TEMP_F': 17,
         'I_HUMIDITY': 51,
         'I_MB': 117,
         'I_INHG': 23,
@@ -15,7 +15,7 @@ UOM = {
         'I_MMHR': 46,
         'I_INHR': 24,
         'I_MM': 82,
-        'I_INCH': 105,
+        'I_INCHES': 105,
         'I_UV': 71,
         'I_LUX': 36,
         'I_RADIATION': 74,
