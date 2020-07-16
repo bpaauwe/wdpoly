@@ -582,6 +582,7 @@ class WindNode(polyinterface.Node):
     def SetUnits(self, u):
         self.units = u
 
+    # Convert from Knots to MPH or KM/H as appropriate
     def setDriver(self, driver, value):
         if (driver == 'ST' or driver == 'GV1' or driver == 'GV3' or driver == 'GV4'):
             if (self.units != 'metric'):
