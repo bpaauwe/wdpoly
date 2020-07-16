@@ -136,6 +136,10 @@ The Weather Display nodeserver keeps track of the version number and when a prof
 
 # Release Notes
 
+- 0.2.2 07/16/2020
+   - Fixup editor names to match node definitions
+   - Add average wind speed to wind speed conversions
+   - Change wind speed conversion to assume incoming value is in knots.
 - 0.2.1 03/20/2019
    - Fix online status going false after query.
 - 0.1.0 09/14/2018

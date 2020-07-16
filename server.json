@@ -8,13 +8,13 @@
     "notice": "see http://www.weather-display.com for more information",
     "shortPoll": "5",
     "longPoll": "60",
-    "profile_version": "0.2.0",
+    "profile_version": "0.2.2",
     "credits": [
     	{
     		"title": "WDPoly: Weather Data",
     		"author": "Bob Paauwe",
-    		"version": "0.2.1",
-    		"date": "March 20, 2019",
+    		"version": "0.2.2",
+    		"date": "July 16, 2020",
     		"source": "https://github.com/bpaauwe/wdpoly",
             "license": "https://github.com/bpaauwe/wdpoly/LICENSE"
 		}
