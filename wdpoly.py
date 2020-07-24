@@ -638,8 +638,14 @@ class PrecipitationNode(polyinterface.Node):
 
         
     def setDriver(self, driver, value):
-        if (self.units == 'us'):
-            value = round(value * 0.03937, 2)
+        if (driver == 'ST'):
+            if (self.units == 'us'):
+                value = round(value * 2.362, 3)
+            else:
+                value = round(value * 60, 3)
+        else:
+            if (self.units == 'us'):
+                value = round(value * 0.03937, 2)
         super(PrecipitationNode, self).setDriver(driver, value, report=True, force=True)
 
 class LightNode(polyinterface.Node):
