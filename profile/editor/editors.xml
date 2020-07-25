@@ -5,8 +5,11 @@
 	<editor id="I_LAST_UPDATE">
 		<range uom="58" min="0" max="5000000000" prec="0" />
 	</editor>
-	<editor id="I_TREND">
-		<range uom="25" subset="0-2" nls="EN_TREND" />
+	<editor id="I_TREND_MB">
+		<range uom="117" min="0" max="10000" prec="3" />
+	</editor>
+	<editor id="I_TREND_INHG">
+		<range uom="23" min="0" max="100" prec="3" />
 	</editor>
 	<editor id="I_RAINTYPE">
 		<range uom="25" subset="0-3" nls="EN_RAINTYPE" />
