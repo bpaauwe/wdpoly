@@ -297,7 +297,7 @@ class Controller(polyinterface.Controller):
                 self.humidity_map.append(mapper)
             elif vmap[0] == 'pressure':
                 if vmap[1] == 'trend':
-                    self.pressure_list[vmap[1]] = 'I_TREND'
+                    self.pressure_list[vmap[1]] = 'I_TREND_INHG' if self.units == 'us' else 'I_TREND_MB'
                 else:
                     self.pressure_list[vmap[1]] = 'I_INHG' if self.units == 'us' else 'I_MB'
                 mapper = [ write_profile.PRES_DRVS[vmap[1]],
