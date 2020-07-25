@@ -45,7 +45,7 @@ ND-pressure-NAME = Barometric Pressures
 ND-pressure-ICON = Input
 ST-139P-ST-NAME = Absolute Pressure
 ST-139P-GV0-NAME = Relative Pressure
-ST-139P-GV1-NAME = Pressure Trend
+ST-139P-GV1-NAME = Pressure Trend Last Hr
 
 ND-wind-NAME = Wind
 ND-wind-ICON = Input
