@@ -638,7 +638,7 @@ class PrecipitationNode(polyinterface.Node):
 
         
     def setDriver(self, driver, value):
-        if (driver == 'ST'):
+        if (driver == 'ST') or (driver == 'GV5'):
             if (self.units == 'us'):
                 value = round(value * 2.362, 3)
             else:
